@@ -4,6 +4,32 @@
     <title>RSS Reader</title>
   </head>
   <body>
-    <div id="entrypoint"></div>
+    <div id="entrypoint">
+      <main class="container">
+        <div class="jumbotron mt-4">
+          <h1 class="display-4">RSS Reader</h1>
+          <p class="lead">Read RSS-Feeds with ease</p>
+          <hr class="my-4">
+          <form>
+            <div class="input-group mb-3">
+              <input id="input_text_feed_add" type="text" class="form-control form-control-lg" placeholder="RSS Feed url...">
+            </div>
+            <input id="input_button_feed_add" type="button" class="btn btn-primary float-md-right" value="Add" />
+          <form>
+        </div>
+        <div class="container">
+          <div class="row">
+            <div class="col">
+              <p>Feeds:</p>
+              <ul id="feeds_list" class="list-group list-group-flush"></ul>
+            </div>
+            <div class="col">
+              <p>Articles:</p>
+              <ul id="articles_list" class="list-group list-group-flush"></ul>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
   </body>
 </html>

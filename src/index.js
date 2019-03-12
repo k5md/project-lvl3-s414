@@ -1,3 +1,6 @@
-import init from './init';
+import '@babel/polyfill';
+import 'bootstrap';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import RSSReader from './RSSReader';
 
-init();
+RSSReader();
