@@ -23,12 +23,20 @@
         <div class="container" id="rss_feeds_container">
           <div class="row">
             <div class="col" id="feeds_list_container">
-              <p>Feeds:</p>
-              <ul id="feeds_list" class="list-group list-group-flush"></ul>
+              <div id="feeds_list" class="list-group list-group-flush"></div>
             </div>
             <div class="col" id="articles_list_container">
-              <p>Articles:</p>
-              <ul id="articles_list" class="list-group list-group-flush"></ul>
+              <div id="articles_list" class="list-group list-group-flush"></div>
+            </div>
+          </div>
+        </div>
+        <div class="modal" id="article_description_modal" tabindex="-1">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="article_description_modal_title"></h5>
+              </div>
+              <div class="modal-body" id="article_description_modal_body"></div>
             </div>
           </div>
         </div>

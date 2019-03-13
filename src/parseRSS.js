@@ -1,3 +1,5 @@
+import _ from 'lodash';
+
 export default (data) => {
   const parser = new DOMParser();
   const xml = parser.parseFromString(data, 'application/xml');
@@ -7,8 +9,10 @@ export default (data) => {
   const description = channel.querySelector('description').textContent;
   const articles = [...channel.querySelectorAll('item')].map(
     article => ({
+      id: _.uniqueId(),
       title: article.querySelector('title').textContent,
       link: article.querySelector('link').textContent,
+      description: article.querySelector('description').textContent,
     }),
   );
 

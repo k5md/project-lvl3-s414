@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { watch } from 'melanke-watchjs';
 import { isURL } from 'validator';
+import $ from 'jquery';
 import parse from './parseRSS';
 
 const corsProxy = 'https://cors-anywhere.herokuapp.com/';
@@ -31,6 +32,7 @@ const RSSReader = () => {
     const link = state.URL;
     const url = `${corsProxy}${link}`;
     state.loading = true;
+    state.error = false;
 
     axios.get(url, { headers: { 'Access-Control-Allow-Origin': '*' } })
       .then(({ data }) => {
@@ -60,6 +62,22 @@ const RSSReader = () => {
     state.error = '';
   };
 
+  const showDescriptionHandler = (e) => {
+    const button = $(e.relatedTarget);
+    const article = state.articles.find(item => item.id === button.data('articleId').toString());
+
+    if (!article) {
+      return;
+    }
+
+    const modal = document.querySelector('#article_description_modal');
+    const modalTitle = modal.querySelector('#article_description_modal_title');
+    const modalBody = modal.querySelector('#article_description_modal_body');
+
+    modalTitle.textContent = article.title;
+    modalBody.textContent = article.description;
+  };
+
   const renderLoadButton = () => {
     const loadButton = document.querySelector('#input_button_feed_add');
     loadButton.innerHTML = '';
@@ -77,8 +95,18 @@ const RSSReader = () => {
   };
 
   const renderFeeds = () => {
+    const feedsListContainer = document.querySelector('#feeds_list_container');
     const feedsList = document.querySelector('#feeds_list');
     feedsList.innerHTML = '';
+
+    if (state.feeds.length > 0) {
+      if (!document.querySelector('#articles_text')) {
+        const feedsText = document.createElement('p');
+        feedsText.textContent = 'Feeds:';
+        feedsText.id = 'feeds_text';
+        feedsListContainer.insertBefore(feedsText, feedsList);
+      }
+    }
 
     state.feeds.forEach((feed) => {
       const feedsListItem = document.createElement('li');
@@ -97,17 +125,42 @@ const RSSReader = () => {
   };
 
   const renderArticles = () => {
+    const articlesListContainer = document.querySelector('#articles_list_container');
     const articlesList = document.querySelector('#articles_list');
+
     articlesList.innerHTML = '';
 
+    if (state.articles.length > 0) {
+      if (!document.querySelector('#articles_text')) {
+        const articlesText = document.createElement('p');
+        articlesText.textContent = 'Articles:';
+        articlesText.id = 'articles_text';
+        articlesListContainer.insertBefore(articlesText, articlesList);
+      }
+    }
+
     state.articles.forEach((article) => {
-      const articlesListItem = document.createElement('li');
+      const articlesListItem = document.createElement('div');
       articlesListItem.classList.add('list-group-item');
+
       const link = document.createElement('a');
       link.textContent = article.title;
+      link.classList.add('float-md-left');
       link.href = article.link;
 
+      const showDescriptionButton = document.createElement('button');
+      showDescriptionButton.textContent = 'Description';
+
+      showDescriptionButton.classList.add('btn');
+      showDescriptionButton.classList.add('btn-info');
+      showDescriptionButton.classList.add('float-md-right');
+
+      showDescriptionButton.dataset.toggle = 'modal';
+      showDescriptionButton.dataset.target = '#article_description_modal';
+      showDescriptionButton.dataset.articleId = article.id;
+
       articlesListItem.appendChild(link);
+      articlesListItem.appendChild(showDescriptionButton);
 
       articlesList.appendChild(articlesListItem);
     });
@@ -139,6 +192,8 @@ const RSSReader = () => {
 
     addFeedText.addEventListener('input', addFeedTextHandler);
     addFeedButton.addEventListener('click', addFeedButtonHandler);
+
+    $('#article_description_modal').on('show.bs.modal', showDescriptionHandler);
 
     // view section
 
