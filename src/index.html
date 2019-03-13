@@ -14,16 +14,19 @@
             <div class="input-group mb-3">
               <input id="input_text_feed_add" type="text" class="form-control form-control-lg" placeholder="RSS Feed url...">
             </div>
-            <input id="input_button_feed_add" type="button" class="btn btn-primary float-md-right" value="Add" />
+            <button id="input_button_feed_add" class="btn btn-primary float-md-right" disabled>
+              Add
+            </button>
           <form>
         </div>
-        <div class="container">
+        <div id="error_container"></div>
+        <div class="container" id="rss_feeds_container">
           <div class="row">
-            <div class="col">
+            <div class="col" id="feeds_list_container">
               <p>Feeds:</p>
               <ul id="feeds_list" class="list-group list-group-flush"></ul>
             </div>
-            <div class="col">
+            <div class="col" id="articles_list_container">
               <p>Articles:</p>
               <ul id="articles_list" class="list-group list-group-flush"></ul>
             </div>
