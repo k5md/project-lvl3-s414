@@ -38,12 +38,12 @@ const RSSReader = () => {
 
         state.feeds = [...state.feeds, { ...feed, URL: link }];
         state.articles = [...state.articles, ...articles];
-        state.URL = '';
       })
       .catch(() => {
         state.error = 'Could not fetch data';
       })
       .finally(() => {
+        state.URL = '';
         state.loading = false;
       });
   };
@@ -137,13 +137,18 @@ const RSSReader = () => {
     const addFeedText = document.querySelector('#input_text_feed_add');
     const addFeedButton = document.querySelector('#input_button_feed_add');
 
-    addFeedText.addEventListener('keyup', addFeedTextHandler);
+    addFeedText.addEventListener('input', addFeedTextHandler);
     addFeedButton.addEventListener('click', addFeedButtonHandler);
 
     // view section
 
     watch(state, 'feeds', () => {
       renderFeeds();
+    });
+
+    watch(state, 'URL', () => {
+      const inputText = document.querySelector('#input_text_feed_add');
+      inputText.value = state.URL;
     });
 
     watch(state, 'articles', () => {
