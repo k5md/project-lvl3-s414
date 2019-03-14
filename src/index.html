@@ -10,9 +10,12 @@
           <h1 class="display-4">RSS Reader</h1>
           <p class="lead">Read RSS-Feeds with ease</p>
           <hr class="my-4">
-          <form>
+          <form novalidate>
             <div class="input-group mb-3">
               <input id="input_text_feed_add" type="text" class="form-control form-control-lg" placeholder="RSS Feed url...">
+              <div class="invalid-feedback">
+                Please enter a valid URL
+              </div>
             </div>
             <button id="input_button_feed_add" class="btn btn-primary float-md-right" disabled>
               Add
@@ -30,7 +33,7 @@
             </div>
           </div>
         </div>
-        <div class="modal" id="article_description_modal" tabindex="-1">
+        <div class="modal fade" id="article_description_modal" tabindex="-1">
           <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
               <div class="modal-header">

@@ -14,6 +14,7 @@ const RSSReader = () => {
     feeds: [],
     articles: [],
     error: '',
+    descriptionArticleId: null,
   };
 
   const validate = (str) => {
@@ -40,12 +41,12 @@ const RSSReader = () => {
 
         state.feeds = [...state.feeds, { ...feed, URL: link }];
         state.articles = [...state.articles, ...articles];
+        state.URL = '';
       })
       .catch(() => {
         state.error = 'Could not fetch data';
       })
       .finally(() => {
-        state.URL = '';
         state.loading = false;
       });
   };
@@ -64,30 +65,18 @@ const RSSReader = () => {
 
   const showDescriptionHandler = (e) => {
     const button = $(e.relatedTarget);
-    const article = state.articles.find(item => item.id === button.data('articleId').toString());
-
-    if (!article) {
-      return;
-    }
-
-    const modal = document.querySelector('#article_description_modal');
-    const modalTitle = modal.querySelector('#article_description_modal_title');
-    const modalBody = modal.querySelector('#article_description_modal_body');
-
-    modalTitle.textContent = article.title;
-    modalBody.textContent = article.description;
+    state.descriptionArticleId = button.data('articleId').toString();
   };
 
   const renderLoadButton = () => {
     const loadButton = document.querySelector('#input_button_feed_add');
     loadButton.innerHTML = '';
     loadButton.textContent = 'Add';
-    loadButton.disabled = !state.URLValid;
+    loadButton.disabled = !state.URLValid || state.loading;
 
     if (state.loading) {
       const spinner = document.createElement('span');
-      spinner.classList.add('spinner-border');
-      spinner.classList.add('spinner-border-sm');
+      spinner.classList.add('spinner-border', 'spinner-border-sm');
       spinner.role = 'status';
       loadButton.textContent = 'Loading...';
       loadButton.appendChild(spinner);
@@ -151,9 +140,7 @@ const RSSReader = () => {
       const showDescriptionButton = document.createElement('button');
       showDescriptionButton.textContent = 'Description';
 
-      showDescriptionButton.classList.add('btn');
-      showDescriptionButton.classList.add('btn-info');
-      showDescriptionButton.classList.add('float-md-right');
+      showDescriptionButton.classList.add('btn', 'btn-info', 'float-md-right');
 
       showDescriptionButton.dataset.toggle = 'modal';
       showDescriptionButton.dataset.target = '#article_description_modal';
@@ -176,14 +163,37 @@ const RSSReader = () => {
 
     const error = document.createElement('div');
 
-    error.classList.add('alert');
-    error.classList.add('alert-danger');
-    error.classList.add('alert-dismissible');
+    error.classList.add('alert', 'alert-danger', 'alert-dismissible');
     error.role = 'alert';
     error.textContent = state.error;
     error.addEventListener('click', closeErrorAlertHandler);
 
     errorContainer.appendChild(error);
+  };
+
+  const renderModal = () => {
+    const article = state.articles.find(item => item.id === state.descriptionArticleId);
+
+    const modal = document.querySelector('#article_description_modal');
+    const modalTitle = modal.querySelector('#article_description_modal_title');
+    const modalBody = modal.querySelector('#article_description_modal_body');
+
+    modalTitle.textContent = article.title;
+    modalBody.textContent = article.description;
+  };
+
+  const renderURLInput = () => {
+    const inputText = document.querySelector('#input_text_feed_add');
+    inputText.value = state.URL;
+    inputText.disabled = state.loading;
+
+    inputText.classList.remove('is-valid', 'is-invalid');
+
+    if (state.URL.length === 0) {
+      return;
+    }
+
+    inputText.classList.add(state.URLValid ? 'is-valid' : 'is-invalid');
   };
 
   const mount = () => {
@@ -195,15 +205,12 @@ const RSSReader = () => {
 
     $('#article_description_modal').on('show.bs.modal', showDescriptionHandler);
 
-    // view section
-
     watch(state, 'feeds', () => {
       renderFeeds();
     });
 
     watch(state, 'URL', () => {
-      const inputText = document.querySelector('#input_text_feed_add');
-      inputText.value = state.URL;
+      renderURLInput();
     });
 
     watch(state, 'articles', () => {
@@ -212,10 +219,15 @@ const RSSReader = () => {
 
     watch(state, ['URLValid', 'loading'], () => {
       renderLoadButton();
+      renderURLInput();
     });
 
     watch(state, 'error', () => {
       renderError();
+    });
+
+    watch(state, 'descriptionArticleId', () => {
+      renderModal();
     });
   };
 
