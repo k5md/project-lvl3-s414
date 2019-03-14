@@ -5,6 +5,7 @@ import $ from 'jquery';
 import parse from './parseRSS';
 
 const corsProxy = 'https://cors-anywhere.herokuapp.com/';
+const updateTimeout = 5000;
 
 const RSSReader = () => {
   const state = {
@@ -21,11 +22,36 @@ const RSSReader = () => {
     if (
       str.length === 0
       || !isURL(str)
-      || state.feeds.findIndex(feed => feed.URL === str) !== -1
+      || state.feeds.findIndex(feed => feed.link === str) !== -1
     ) {
       return false;
     }
     return true;
+  };
+
+  const updateFeed = (feedId, link) => {
+    const url = `${corsProxy}${link}`;
+    axios.get(url, { headers: { 'Access-Control-Allow-Origin': '*' } })
+      .then(({ data }) => {
+        const { articles } = parse(data);
+
+        const oldArticlesLinks = state.articles
+          .filter(article => article.channelId === feedId)
+          .map(article => article.link);
+
+        const newArticles = articles
+          .filter(article => !(oldArticlesLinks.includes(article.link)))
+          // NOTE: new articles have incorrect (new) channelId after parse, changing it to feedId
+          .map(article => ({ ...article, channelId: feedId }));
+
+        state.articles = [...state.articles, ...newArticles];
+      })
+      .catch(() => {
+        state.error = `Could not update feed ${link}`;
+      })
+      .finally(() => {
+        setTimeout(() => updateFeed(feedId, link), updateTimeout);
+      });
   };
 
   const addFeedButtonHandler = (e) => {
@@ -39,9 +65,11 @@ const RSSReader = () => {
       .then(({ data }) => {
         const { feed, articles } = parse(data);
 
-        state.feeds = [...state.feeds, { ...feed, URL: link }];
+        state.feeds = [...state.feeds, { ...feed, link }];
         state.articles = [...state.articles, ...articles];
         state.URL = '';
+
+        setTimeout(() => updateFeed(feed.id, link), updateTimeout);
       })
       .catch(() => {
         state.error = 'Could not fetch data';
