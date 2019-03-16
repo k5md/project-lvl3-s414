@@ -21,7 +21,7 @@ const RSSReader = () => {
   };
 
   const validate = str => str.length === 0
-    || (isURL(str) && state.feeds.some(feed => feed.link === str));
+    || (isURL(str) && !state.feeds.some(feed => feed.link === str));
 
   const updateFeed = (feedId, link) => {
     const url = `${corsProxy}${link}`;
@@ -39,9 +39,6 @@ const RSSReader = () => {
           .map(article => ({ ...article, channelId: feedId }));
 
         state.articles = [...state.articles, ...newArticles];
-      })
-      .catch(() => {
-        state.errorText = `Could not update feed ${link}`;
       })
       .finally(() => {
         setTimeout(() => updateFeed(feedId, link), updateTimeout);
