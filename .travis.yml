@@ -6,7 +6,10 @@ node_js:
 
 script:
   - make lint
-  - make deploy
+  - make build
 
 deploy:
+  provider: surge
+  project: ./dist/
+  domain: curly-metal.surge.sh
   skip_cleanup: true
