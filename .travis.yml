@@ -6,9 +6,7 @@ node_js:
 
 script:
   - make lint
-  - make build
+  - make deploy
 
 deploy:
-  provider: surge
-  project: ./dist/
   skip_cleanup: true
