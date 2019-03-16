@@ -21,7 +21,7 @@ const RSSReader = () => {
   };
 
   const validate = str => str.length === 0
-    || (isURL(str) && state.feeds.findIndex(feed => feed.link === str) === -1);
+    || (isURL(str) && state.feeds.some(feed => feed.link === str));
 
   const updateFeed = (feedId, link) => {
     const url = `${corsProxy}${link}`;
